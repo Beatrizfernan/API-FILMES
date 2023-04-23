@@ -1,0 +1,387 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de manipulação de filmes",
+        "description": "API tem como objetivo a manipulaçao de filmes",
+        "termsOfService":"http://localhost:5432/terms",
+        "contact":{
+        "email": "beatrizfernandesssouz@gmail.com"
+        },"version":"1.0.0"
+    },"servers":[
+        {
+            "url": "http://localhost:5432",
+            "description": "API de teste"
+        }
+    ],
+    "paths": {
+        "/users": {
+            "post": {
+                "summary": "Cadastro de usuário",
+                "description": "Essa rota será responsável por cadastrar um novo usuário",
+                "tags": [
+                    "Usuários"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Usuarios"
+                            },
+                            "examples": {
+                                "usuário": {
+                                    "value": {
+                                        "name": "Bea",
+                                        "email": "bea@gmail.com",
+                                        "password": "1234"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Usuário criado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuarios"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "A senha é obrigatória/email já está em uso"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "put": {
+                "summary": "Update de usuário",
+                "description": "Essa rota será responsável por atualizar dados de um usuário já existente pelo id",
+                "tags": [
+                    "Usuários"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "update de dados do usuário pelo id do usuário",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "old_password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "old_password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Dados do usuário mudados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usuarios"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Usuário não encontrado/email já está em uso/Requer a senha antiga./Senha antiga não confere."
+                    }
+                }
+            }
+        },
+        "/notes/{user_id}": {
+            "post": {
+                "summary": "Criar notas",
+                "description": "Essa rota será responsável por criar as notas cadastradas pelo usuário",
+                "tags": [
+                    "Notas"
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "Id do usuário para criar as notas",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Notas"
+                            },
+                            "examples": {
+                                "nota": {
+                                    "summary": "Exemplo de corpo da requisição",
+                                    "value": {
+                                        "title": "Nota 1",
+                                        "description": "Descrição da nota 1",
+                                        "rating": 5,
+                                        "tags": [
+                                            "tag1",
+                                            "tag2"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Notas criadas com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Notas"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/notes": {
+            "get": {
+                "summary": "Listar notas",
+                "description": "Essa rota será responsável por listar as notas cadastradas pelo usuário",
+                "tags": [
+                    "Notas"
+                ],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Id do usuário",
+                        "required": true
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Título da nota",
+                        "required": false
+                    },
+                    {
+                        "name": "rating",
+                        "in": "query",
+                        "description": "Avaliação da nota",
+                        "required": false
+                    },
+                    {
+                        "name": "tags",
+                        "in": "query",
+                        "description": "Tags associadas à nota",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Notas listadas com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "$ref": "#/components/schemas/Notas"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/notes/{id}": {
+            "get": {
+                "summary": "Listar notas de um usuário específico",
+                "description": "Essa rota será responsável por listar notas de um usuário específico existente",
+                "tags": [
+                    "Notas"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da nota a ser atualizada",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Notas"
+                            },
+                            "examples": {
+                                "nota": {
+                                    "value": {
+                                        "title": "Nota atualizada",
+                                        "description": "Descrição da nota atualizada",
+                                        "rating": 4,
+                                        "tags": [
+                                            "tag1",
+                                            "tag3"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Nota atualizada com sucesso"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Excluir notas",
+                "description": "Essa rota será responsável por excluir uma nota existente",
+                "tags": [
+                    "Notas"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id da nota a ser excluída",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Nota excluída com sucesso"
+                    }
+                }
+            }
+        },
+        "/tags/{user_id}": {
+            "get": {
+                "summary": "Retorna todas as tags do usuário com o ID especificado",
+                "description": "Esta rota retorna um array com todas as tags do usuário com o ID especificado.",
+                "tags": [
+                    "Tags"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "user_id",
+                        "required": true,
+                        "description": "ID do usuário",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuário não encontrado"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Usuarios": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Notas": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "rating": {
+                        "type": "number"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "Tags": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
